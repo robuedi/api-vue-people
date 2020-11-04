@@ -23,8 +23,16 @@ class PersonsController extends Controller
      * @param Person $person
      * @return PersonResource
      */
-    public function show(Person $person) : PersonResource
+    public function show($person)
     {
+        try{
+            $person = Person::findOrFail($person);
+        }
+        catch(\Exception $e)
+        {
+            return response()->json(['message'=> $e->getMessage()]);
+        }
+
         return new PersonResource($person);
     }
 
@@ -48,11 +56,11 @@ class PersonsController extends Controller
     }
 
     /**
-     * @param Person $person
+     * @param $person
      * @param Request $request
-     * @return PersonResource
+     * @return PersonResource|\Illuminate\Http\JsonResponse
      */
-    public function update(Person $person, Request $request) : PersonResource
+    public function update($person, Request $request)
     {
 
         $request->validate([
@@ -63,14 +71,22 @@ class PersonsController extends Controller
             'city'          => 'max:255|min:1'
         ]);
 
+        try{
+            $person = Person::findOrFail($person);
+        }
+        catch(\Exception $e)
+        {
+            return response()->json(['message'=> $e->getMessage()]);
+        }
+
         $person->update($request->all());
 
         return new PersonResource($person);
     }
 
     /**
-     * @param Person $person
-     * @return PersonResource
+     * @param $person
+     * @return PersonResource|\Illuminate\Http\JsonResponse
      */
     public function destroy($person)
     {
