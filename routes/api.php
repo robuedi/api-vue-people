@@ -18,6 +18,11 @@ use Illuminate\Support\Facades\Route;
 //    return $request->user();
 //});
 
-use App\Http\Controllers\Api\PersonsController;
 
-Route::apiResource('/person', PersonsController::class);
+Route::prefix('v1')->group(function (){
+    Route::apiResource('/person', \App\Http\Controllers\Api\v1\PersonsController::class);
+});
+
+Route::prefix('v2')->group(function (){
+    Route::apiResource('/person', \App\Http\Controllers\Api\v2\PersonsController::class)->only('show');
+});

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\PersonResource;
-use App\Http\Resources\PersonResourceCollection;
+use App\Http\Resources\v1\PersonResource;
+use App\Http\Resources\v1\PersonResourceCollection;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use App\Models\Person;
@@ -20,8 +20,8 @@ class PersonsController extends Controller
     }
 
     /**
-     * @param Person $person
-     * @return PersonResource
+     * @param $person
+     * @return PersonResource|\Illuminate\Http\JsonResponse
      */
     public function show($person)
     {
