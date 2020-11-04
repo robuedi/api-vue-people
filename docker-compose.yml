@@ -1,0 +1,100 @@
+version: "3.7"
+services:
+
+  db:
+    image: mysql:5.7
+    container_name: ${APP_NAME}-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: "${DB_DATABASE}"
+      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
+      MYSQL_PASSWORD: "${DB_PASSWORD}"
+      MYSQL_USER: "${DB_USERNAME}"
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    healthcheck:
+        test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+        timeout: 20s
+        retries: 10
+    ports:
+      - "${DB_PORT}:3306"
+    volumes:
+      - ./docker/mysql/data:/var/lib/mysql/ #this will make the storage persistent
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d/ #this will first populate the database
+    networks:
+      - app-net
+
+  init-scripts:
+    build:
+      args:
+        user: eduard
+        uid: 1000
+      context: ./
+      dockerfile: Dockerfile
+    image: ${APP_NAME}
+    container_name: ${APP_NAME}-init-scripts
+    working_dir: /var/www/
+    command: bash -c 'chmod +x docker/init.sh && docker/init.sh' # migrations will run at startup
+    volumes:
+      - ./:/var/www
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-net
+
+  app:
+    build:
+          args:
+            user: eduard
+            uid: 1000
+          context: ./
+          dockerfile: Dockerfile
+    image: ${APP_NAME}
+    container_name: ${APP_NAME}-app
+    working_dir: /var/www/
+    volumes:
+      - ./:/var/www
+    depends_on:
+      - db
+      - init-scripts
+    networks:
+      - app-net
+
+  nginx:
+    image: nginx:stable-alpine
+    container_name: ${APP_NAME}-nginx
+    restart: unless-stopped
+    ports:
+      - "8001:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx:/etc/nginx/conf.d
+    depends_on:
+      - app
+      - db
+    networks:
+      - app-net
+
+  phpmyadmin:
+      image: phpmyadmin/phpmyadmin
+      container_name: ${APP_NAME}-phpmyadmin
+      ports:
+        - "7001:80"
+      links:
+        - db:db
+      environment:
+        MYSQL_USER: ${DB_USERNAME}
+        MYSQL_PASSWORD: ${DB_PASSWORD}
+        MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+        PMA_USER: ${DB_USERNAME} # comment this line to disable auto-login
+        PMA_PASSWORD: ${DB_PASSWORD} # comment this line to disable auto-login
+      depends_on:
+        - db
+        - init-scripts
+      networks:
+        - app-net
+
+networks:
+  app-net:
+    driver: bridge
