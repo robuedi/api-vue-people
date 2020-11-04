@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PersonResource;
 use App\Http\Resources\PersonResourceCollection;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use App\Models\Person;
 
@@ -63,6 +64,25 @@ class PersonsController extends Controller
         ]);
 
         $person->update($request->all());
+
+        return new PersonResource($person);
+    }
+
+    /**
+     * @param Person $person
+     * @return PersonResource
+     */
+    public function destroy($person)
+    {
+        try{
+            $person = Person::findOrFail($person);
+        }
+        catch(\Exception $e)
+        {
+            return response()->json(['message'=> $e->getMessage()]);
+        }
+
+        $person->delete();
 
         return new PersonResource($person);
     }
