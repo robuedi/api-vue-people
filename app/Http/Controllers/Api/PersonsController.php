@@ -27,17 +27,42 @@ class PersonsController extends Controller
         return new PersonResource($person);
     }
 
+    /**
+     * @param Request $request
+     * @return PersonResource
+     */
     public function store(Request $request)
     {
         $request->validate([
-            'first_name'    => 'required|max:255',
-            'last_name'     => 'required|max:255',
-            'phone'         => 'required|max:255',
-            'email'         => 'required|max:255',
-            'city'          => 'required|max:255'
+            'first_name'    => 'required|max:255|min:1',
+            'last_name'     => 'required|max:255|min:1',
+            'phone'         => 'required|max:255|min:1',
+            'email'         => 'required|max:255|min:1',
+            'city'          => 'required|max:255|min:1'
         ]);
 
         $person = Person::create($request->all());
+
+        return new PersonResource($person);
+    }
+
+    /**
+     * @param Person $person
+     * @param Request $request
+     * @return PersonResource
+     */
+    public function update(Person $person, Request $request) : PersonResource
+    {
+
+        $request->validate([
+            'first_name'    => 'max:255|min:1',
+            'last_name'     => 'max:255|min:1',
+            'phone'         => 'max:255|min:1',
+            'email'         => 'max:255|min:1',
+            'city'          => 'max:255|min:1'
+        ]);
+
+        $person->update($request->all());
 
         return new PersonResource($person);
     }
