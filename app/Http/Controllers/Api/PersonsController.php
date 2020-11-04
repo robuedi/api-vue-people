@@ -11,6 +11,14 @@ use App\Models\Person;
 class PersonsController extends Controller
 {
     /**
+     * @return PersonResourceCollection
+     */
+    public function index() : PersonResourceCollection
+    {
+        return new PersonResourceCollection(Person::paginate());
+    }
+
+    /**
      * @param Person $person
      * @return PersonResource
      */
@@ -19,8 +27,19 @@ class PersonsController extends Controller
         return new PersonResource($person);
     }
 
-    public function index() : PersonResourceCollection
+    public function store(Request $request)
     {
-        return new PersonResourceCollection(Person::paginate());
+        $request->validate([
+            'first_name'    => 'required|max:255',
+            'last_name'     => 'required|max:255',
+            'phone'         => 'required|max:255',
+            'email'         => 'required|max:255',
+            'city'          => 'required|max:255'
+        ]);
+
+        $person = Person::create($request->all());
+
+        return new PersonResource($person);
     }
+
 }
