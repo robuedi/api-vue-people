@@ -35,7 +35,7 @@
                 </div>
             </div>
         </form>
-        <table class="table table-striped mt-3">
+        <table class="table table-striped mt-3 editable-table">
             <thead>
                 <tr>
                     <th @click="filterBy('id')" :class="[filterSortBy === 'id' ? 'selected-column' : '']" class=" table-header " scope="col">#</th>
@@ -47,14 +47,14 @@
                     <th v-if="deleteEnabled" class="table-header" scope="col" >Action</th>
                 </tr>
                 </thead>
-            <tbody>
+            <tbody >
                 <tr v-for="person in persons.data" :key="person.id">
-                    <td >{{person.id}}</td>
-                    <td>{{person.first_name}}</td>
-                    <td>{{person.last_name}}</td>
-                    <td>{{person.phone}}</td>
-                    <td>{{person.email}}</td>
-                    <td>{{person.city}}</td>
+                    <td>{{person.id}}</td>
+                    <td><input :id="[`prs-inp-${person.id}-first_name`]" @focus="makeTdActive(person.id, 'first_name')" @blur="makeTdInactive(person.id, 'first_name')" v-model="person.first_name"> </td>
+                    <td><input :id="[`prs-inp-${person.id}-last_name`]" @focus="makeTdActive(person.id, 'last_name')" @blur="makeTdInactive(person.id, 'last_name')" v-model="person.last_name"> </td>
+                    <td><input :id="[`prs-inp-${person.id}-phone`]" @focus="makeTdActive(person.id, 'phone')" @blur="makeTdInactive(person.id, 'phone')" v-model="person.phone"> </td>
+                    <td><input :id="[`prs-inp-${person.id}-email`]" @focus="makeTdActive(person.id, 'email')" @blur="makeTdInactive(person.id, 'email')" v-model="person.email"> </td>
+                    <td><input :id="[`prs-inp-${person.id}-city`]" @focus="makeTdActive(person.id, 'city')" @blur="makeTdInactive(person.id, 'city')" v-model="person.city"> </td>
                     <td v-if="deleteEnabled"><button type="button" @click="destroyPerson(person.id)" class="btn btn-danger">Delete</button></td>
                 </tr>
             </tbody>
@@ -158,6 +158,39 @@
                 this.indexLink = link;
 
                 this.index();
+            },
+            makeTdActive(personId, personField){
+                let activeTd = document.querySelector(`#prs-inp-${personId}-${personField}`);
+
+                if(activeTd.classList.contains('error'))
+                {
+                    this.index();
+                    activeTd.classList.add('active');
+                }
+                else
+                {
+                    activeTd.classList.add('active');
+                }
+
+            },
+            makeTdInactive(personId, personField){
+                let activeTd = document.querySelector(`#prs-inp-${personId}-${personField}`);
+                activeTd.classList.add('pending');
+                activeTd.classList.remove('active');
+                activeTd.classList.remove('error');
+
+                let fieldUpdated = {};
+                fieldUpdated[personField] = activeTd.value;
+
+                //save the updates
+                axios.patch(`/api/v1/person/${personId}`, fieldUpdated).then((res) => {
+                    activeTd.classList.remove('pending');
+                    this.index();
+                }).catch(error => {
+                    activeTd.classList.remove('pending');
+                    activeTd.classList.add('error');
+                });
+
             }
 
         }

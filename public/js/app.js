@@ -2070,6 +2070,35 @@ __webpack_require__.r(__webpack_exports__);
     paginateTo: function paginateTo(link) {
       this.indexLink = link;
       this.index();
+    },
+    makeTdActive: function makeTdActive(personId, personField) {
+      var activeTd = document.querySelector("#prs-inp-".concat(personId, "-").concat(personField));
+
+      if (activeTd.classList.contains('error')) {
+        this.index();
+        activeTd.classList.add('active');
+      } else {
+        activeTd.classList.add('active');
+      }
+    },
+    makeTdInactive: function makeTdInactive(personId, personField) {
+      var _this4 = this;
+
+      var activeTd = document.querySelector("#prs-inp-".concat(personId, "-").concat(personField));
+      activeTd.classList.add('pending');
+      activeTd.classList.remove('active');
+      activeTd.classList.remove('error');
+      var fieldUpdated = {};
+      fieldUpdated[personField] = activeTd.value; //save the updates
+
+      axios.patch("/api/v1/person/".concat(personId), fieldUpdated).then(function (res) {
+        activeTd.classList.remove('pending');
+
+        _this4.index();
+      })["catch"](function (error) {
+        activeTd.classList.remove('pending');
+        activeTd.classList.add('error');
+      });
     }
   }
 });
@@ -37919,7 +37948,7 @@ var render = function() {
         )
       : _vm._e(),
     _vm._v(" "),
-    _c("table", { staticClass: "table table-striped mt-3" }, [
+    _c("table", { staticClass: "table table-striped mt-3 editable-table" }, [
       _c("thead", [
         _c("tr", [
           _c(
@@ -38032,15 +38061,150 @@ var render = function() {
           return _c("tr", { key: person.id }, [
             _c("td", [_vm._v(_vm._s(person.id))]),
             _vm._v(" "),
-            _c("td", [_vm._v(_vm._s(person.first_name))]),
+            _c("td", [
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: person.first_name,
+                    expression: "person.first_name"
+                  }
+                ],
+                attrs: { id: ["prs-inp-" + person.id + "-first_name"] },
+                domProps: { value: person.first_name },
+                on: {
+                  focus: function($event) {
+                    return _vm.makeTdActive(person.id, "first_name")
+                  },
+                  blur: function($event) {
+                    return _vm.makeTdInactive(person.id, "first_name")
+                  },
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.$set(person, "first_name", $event.target.value)
+                  }
+                }
+              })
+            ]),
             _vm._v(" "),
-            _c("td", [_vm._v(_vm._s(person.last_name))]),
+            _c("td", [
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: person.last_name,
+                    expression: "person.last_name"
+                  }
+                ],
+                attrs: { id: ["prs-inp-" + person.id + "-last_name"] },
+                domProps: { value: person.last_name },
+                on: {
+                  focus: function($event) {
+                    return _vm.makeTdActive(person.id, "last_name")
+                  },
+                  blur: function($event) {
+                    return _vm.makeTdInactive(person.id, "last_name")
+                  },
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.$set(person, "last_name", $event.target.value)
+                  }
+                }
+              })
+            ]),
             _vm._v(" "),
-            _c("td", [_vm._v(_vm._s(person.phone))]),
+            _c("td", [
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: person.phone,
+                    expression: "person.phone"
+                  }
+                ],
+                attrs: { id: ["prs-inp-" + person.id + "-phone"] },
+                domProps: { value: person.phone },
+                on: {
+                  focus: function($event) {
+                    return _vm.makeTdActive(person.id, "phone")
+                  },
+                  blur: function($event) {
+                    return _vm.makeTdInactive(person.id, "phone")
+                  },
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.$set(person, "phone", $event.target.value)
+                  }
+                }
+              })
+            ]),
             _vm._v(" "),
-            _c("td", [_vm._v(_vm._s(person.email))]),
+            _c("td", [
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: person.email,
+                    expression: "person.email"
+                  }
+                ],
+                attrs: { id: ["prs-inp-" + person.id + "-email"] },
+                domProps: { value: person.email },
+                on: {
+                  focus: function($event) {
+                    return _vm.makeTdActive(person.id, "email")
+                  },
+                  blur: function($event) {
+                    return _vm.makeTdInactive(person.id, "email")
+                  },
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.$set(person, "email", $event.target.value)
+                  }
+                }
+              })
+            ]),
             _vm._v(" "),
-            _c("td", [_vm._v(_vm._s(person.city))]),
+            _c("td", [
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: person.city,
+                    expression: "person.city"
+                  }
+                ],
+                attrs: { id: ["prs-inp-" + person.id + "-city"] },
+                domProps: { value: person.city },
+                on: {
+                  focus: function($event) {
+                    return _vm.makeTdActive(person.id, "city")
+                  },
+                  blur: function($event) {
+                    return _vm.makeTdInactive(person.id, "city")
+                  },
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.$set(person, "city", $event.target.value)
+                  }
+                }
+              })
+            ]),
             _vm._v(" "),
             _vm.deleteEnabled
               ? _c("td", [
