@@ -1974,6 +1974,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2033,11 +2038,12 @@ __webpack_require__.r(__webpack_exports__);
       })["catch"](function (error) {
         var errors = error.response.data.errors;
 
-        for (var field in errors) {
-          if (errors.hasOwnProperty(field)) {
-            _this2.storeMsg += "".concat(errors[field], "<br/>");
-          }
-        }
+        _this2.form.errors.record(errors); // for (var field in errors) {
+        //     if (errors.hasOwnProperty(field)) {
+        //         this.storeMsg += `${errors[field]}<br/>`;
+        //     }
+        // }
+
       });
     },
     updatePerson: function updatePerson() {},
@@ -37733,6 +37739,22 @@ var render = function() {
                 }
               }),
               _vm._v(" "),
+              _vm.form.errors.errors
+                ? _c(
+                    "p",
+                    { staticClass: "float-left" },
+                    [
+                      _vm._l(_vm.form.errors.errors, function(errorLabel, _) {
+                        return [
+                          _c("span", [_vm._v(_vm._s(errorLabel[0]))]),
+                          _c("br")
+                        ]
+                      })
+                    ],
+                    2
+                  )
+                : _vm._e(),
+              _vm._v(" "),
               _c(
                 "button",
                 {
@@ -37765,9 +37787,15 @@ var render = function() {
                     }
                   ],
                   staticClass: "form-control",
+                  class: [
+                    this.form.errors.has("first_name") ? "is-invalid" : ""
+                  ],
                   attrs: { type: "text", placeholder: "First name" },
                   domProps: { value: _vm.form.firstName },
                   on: {
+                    keydown: function($event) {
+                      return _vm.form.errors.clear("first_name")
+                    },
                     input: function($event) {
                       if ($event.target.composing) {
                         return
@@ -37789,9 +37817,15 @@ var render = function() {
                     }
                   ],
                   staticClass: "form-control",
+                  class: [
+                    this.form.errors.has("last_name") ? "is-invalid" : ""
+                  ],
                   attrs: { type: "text", placeholder: "Last name" },
                   domProps: { value: _vm.form.lastName },
                   on: {
+                    keydown: function($event) {
+                      return _vm.form.errors.clear("last_name")
+                    },
                     input: function($event) {
                       if ($event.target.composing) {
                         return
@@ -37813,9 +37847,13 @@ var render = function() {
                     }
                   ],
                   staticClass: "form-control",
+                  class: [this.form.errors.has("phone") ? "is-invalid" : ""],
                   attrs: { type: "text", placeholder: "Phone" },
                   domProps: { value: _vm.form.phone },
                   on: {
+                    keydown: function($event) {
+                      return _vm.form.errors.clear("phone")
+                    },
                     input: function($event) {
                       if ($event.target.composing) {
                         return
@@ -37837,9 +37875,13 @@ var render = function() {
                     }
                   ],
                   staticClass: "form-control",
+                  class: [this.form.errors.has("email") ? "is-invalid" : ""],
                   attrs: { type: "text", placeholder: "Email" },
                   domProps: { value: _vm.form.email },
                   on: {
+                    keydown: function($event) {
+                      return _vm.form.errors.clear("email")
+                    },
                     input: function($event) {
                       if ($event.target.composing) {
                         return
@@ -37861,9 +37903,13 @@ var render = function() {
                     }
                   ],
                   staticClass: "form-control",
+                  class: [this.form.errors.has("city") ? "is-invalid" : ""],
                   attrs: { type: "text", placeholder: "City" },
                   domProps: { value: _vm.form.city },
                   on: {
+                    keydown: function($event) {
+                      return _vm.form.errors.clear("city")
+                    },
                     input: function($event) {
                       if ($event.target.composing) {
                         return

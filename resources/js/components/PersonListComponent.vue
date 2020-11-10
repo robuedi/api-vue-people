@@ -2,62 +2,67 @@
     <div class="w-50">
 
         <div class="clearfix" v-if="!storeEnabled">
-            <span class="float-left cursor-pointer" v-html="actionMsg" v-on:click="actionMsg = ''"></span>
-            <button type="button" class="btn btn-primary float-right" v-on:click="deleteEnabled = !deleteEnabled; storeEnabled = false">Edit list</button>
-            <button type="button" class="btn btn-success float-right mr-2" v-on:click="storeEnabled = true; deleteEnabled = false">+ Add new</button>
+            <span class="float-left cursor-pointer" v-html="actionMsg" @click="actionMsg = ''"></span>
+            <button type="button" class="btn btn-primary float-right" @click="deleteEnabled = !deleteEnabled; storeEnabled = false">Edit list</button>
+            <button type="button" class="btn btn-success float-right mr-2" @click="storeEnabled = true; deleteEnabled = false">+ Add new</button>
         </div>
-        <form @submit.prevent="storePerson" v-if="storeEnabled">
+        <form @submit.prevent="storePerson" v-if="storeEnabled" >
             <div class="clearfix mb-2">
-                <span class="float-left cursor-pointer" v-html="storeMsg" v-on:click="storeMsg = ''"></span>
-                <button type="button" class="ml-2 btn btn-secondary float-right" v-on:click="abortStore">Cancel</button>
+                <span class="float-left cursor-pointer" v-html="storeMsg" @click="storeMsg = ''"></span>
+                <p class="float-left" v-if="form.errors.errors" >
+                    <template v-for="(errorLabel, _ ) in form.errors.errors">
+                        <span >{{errorLabel[0]}}</span><br/>
+                    </template>
+                </p>
+                <button type="button" class="ml-2 btn btn-secondary float-right" @click="abortStore">Cancel</button>
                 <button type="submit" class="btn btn-success float-right">Save</button>
             </div>
             <div class="form-row">
                 <div class="col">
-                    <input v-model="form.firstName" type="text" class="form-control" placeholder="First name">
+                    <input v-model="form.firstName" @keydown="form.errors.clear('first_name')" :class="[this.form.errors.has('first_name') ? 'is-invalid' : '']" type="text" class="form-control" placeholder="First name">
                 </div>
                 <div class="col">
-                    <input v-model="form.lastName" type="text" class="form-control" placeholder="Last name">
+                    <input v-model="form.lastName" @keydown="form.errors.clear('last_name')" :class="[this.form.errors.has('last_name') ? 'is-invalid' : '']" type="text" class="form-control" placeholder="Last name">
                 </div>
                 <div class="col">
-                    <input v-model="form.phone" type="text" class="form-control" placeholder="Phone">
+                    <input v-model="form.phone" @keydown="form.errors.clear('phone')" :class="[this.form.errors.has('phone') ? 'is-invalid' : '']" type="text" class="form-control" placeholder="Phone">
                 </div>
                 <div class="col">
-                    <input v-model="form.email" type="text" class="form-control" placeholder="Email">
+                    <input v-model="form.email" @keydown="form.errors.clear('email')" :class="[this.form.errors.has('email') ? 'is-invalid' : '']" type="text" class="form-control" placeholder="Email">
                 </div>
                 <div class="col">
-                    <input v-model="form.city" type="text" class="form-control" placeholder="City">
+                    <input v-model="form.city" @keydown="form.errors.clear('city')" :class="[this.form.errors.has('city') ? 'is-invalid' : '']" type="text" class="form-control" placeholder="City">
                 </div>
             </div>
         </form>
         <table class="table table-striped mt-3">
             <thead>
                 <tr>
-                    <th v-on:click="filterBy('id')" v-bind:class="[filterSortBy === 'id' ? 'selected-column' : '']" class=" table-header " scope="col">#</th>
-                    <th v-on:click="filterBy('first_name')" v-bind:class="[filterSortBy === 'first_name' ? 'selected-column' : '']" class=" table-header " scope="col">First name</th>
-                    <th v-on:click="filterBy('last_name')" v-bind:class="[filterSortBy === 'last_name' ? 'selected-column' : '']" class="table-header" scope="col">Last name</th>
-                    <th v-on:click="filterBy('phone')" v-bind:class="[filterSortBy === 'phone' ? 'selected-column' : '']" class="table-header" scope="col">Phone</th>
-                    <th v-on:click="filterBy('email')" v-bind:class="[filterSortBy === 'email' ? 'selected-column' : '']" class="table-header" scope="col">Email</th>
-                    <th v-on:click="filterBy('city')" v-bind:class="[filterSortBy === 'city' ? 'selected-column' : '']" class="table-header" scope="col">City</th>
+                    <th @click="filterBy('id')" :class="[filterSortBy === 'id' ? 'selected-column' : '']" class=" table-header " scope="col">#</th>
+                    <th @click="filterBy('first_name')" :class="[filterSortBy === 'first_name' ? 'selected-column' : '']" class=" table-header " scope="col">First name</th>
+                    <th @click="filterBy('last_name')" :class="[filterSortBy === 'last_name' ? 'selected-column' : '']" class="table-header" scope="col">Last name</th>
+                    <th @click="filterBy('phone')" :class="[filterSortBy === 'phone' ? 'selected-column' : '']" class="table-header" scope="col">Phone</th>
+                    <th @click="filterBy('email')" :class="[filterSortBy === 'email' ? 'selected-column' : '']" class="table-header" scope="col">Email</th>
+                    <th @click="filterBy('city')" :class="[filterSortBy === 'city' ? 'selected-column' : '']" class="table-header" scope="col">City</th>
                     <th v-if="deleteEnabled" class="table-header" scope="col" >Action</th>
                 </tr>
                 </thead>
             <tbody>
                 <tr v-for="person in persons.data" :key="person.id">
-                    <td>{{person.id}}</td>
+                    <td >{{person.id}}</td>
                     <td>{{person.first_name}}</td>
                     <td>{{person.last_name}}</td>
                     <td>{{person.phone}}</td>
                     <td>{{person.email}}</td>
                     <td>{{person.city}}</td>
-                    <td v-if="deleteEnabled"><button type="button" v-on:click="destroyPerson(person.id)" class="btn btn-danger">Delete</button></td>
+                    <td v-if="deleteEnabled"><button type="button" @click="destroyPerson(person.id)" class="btn btn-danger">Delete</button></td>
                 </tr>
             </tbody>
         </table>
         <nav aria-label="Page navigation example">
             <ul class="pagination justify-content-center">
-                <li class="page-item" v-on:click="paginateTo(link.url)"  v-bind:class="[link.active ? 'active' : '', link.url ? '' : 'disabled']" v-for="link in links">
-                    <a class="page-link" v-on:click.prevent href="#"  v-html="link.label"></a>
+                <li class="page-item" @click="paginateTo(link.url)"  v-bind:class="[link.active ? 'active' : '', link.url ? '' : 'disabled']" v-for="link in links">
+                    <a class="page-link" @click.prevent href="#"  v-html="link.label"></a>
                 </li>
             </ul>
         </nav>
@@ -119,11 +124,12 @@
                     this.storeEnabled = false;
                 }).catch(error => {
                     let errors = error.response.data.errors;
-                    for (var field in errors) {
-                        if (errors.hasOwnProperty(field)) {
-                            this.storeMsg += `${errors[field]}<br/>`;
-                        }
-                    }
+                    this.form.errors.record(errors);
+                    // for (var field in errors) {
+                    //     if (errors.hasOwnProperty(field)) {
+                    //         this.storeMsg += `${errors[field]}<br/>`;
+                    //     }
+                    // }
                 });
             },
             updatePerson(){
