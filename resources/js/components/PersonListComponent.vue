@@ -2,11 +2,13 @@
     <div class="w-50">
 
         <div class="clearfix" v-if="!storeEnabled">
-            <button type="button" class="btn btn-primary float-right" v-on:click="storeEnabled = true">+ Add new</button>
+            <span class="float-left cursor-pointer" v-html="actionMsg" v-on:click="actionMsg = ''"></span>
+            <button type="button" class="btn btn-primary float-right" v-on:click="deleteEnabled = !deleteEnabled; storeEnabled = false">Edit list</button>
+            <button type="button" class="btn btn-success float-right mr-2" v-on:click="storeEnabled = true; deleteEnabled = false">+ Add new</button>
         </div>
         <form @submit.prevent="storePerson" v-if="storeEnabled">
             <div class="clearfix mb-2">
-                <span class="float-left" v-html="storeMsg"></span>
+                <span class="float-left cursor-pointer" v-html="storeMsg" v-on:click="storeMsg = ''"></span>
                 <button type="button" class="ml-2 btn btn-secondary float-right" v-on:click="abortStore">Cancel</button>
                 <button type="submit" class="btn btn-success float-right">Save</button>
             </div>
@@ -31,20 +33,24 @@
         <table class="table table-striped mt-3">
             <thead>
                 <tr>
+                    <th v-on:click="filterBy('id')" v-bind:class="[filterSortBy === 'id' ? 'selected-column' : '']" class=" table-header " scope="col">#</th>
                     <th v-on:click="filterBy('first_name')" v-bind:class="[filterSortBy === 'first_name' ? 'selected-column' : '']" class=" table-header " scope="col">First name</th>
                     <th v-on:click="filterBy('last_name')" v-bind:class="[filterSortBy === 'last_name' ? 'selected-column' : '']" class="table-header" scope="col">Last name</th>
                     <th v-on:click="filterBy('phone')" v-bind:class="[filterSortBy === 'phone' ? 'selected-column' : '']" class="table-header" scope="col">Phone</th>
                     <th v-on:click="filterBy('email')" v-bind:class="[filterSortBy === 'email' ? 'selected-column' : '']" class="table-header" scope="col">Email</th>
                     <th v-on:click="filterBy('city')" v-bind:class="[filterSortBy === 'city' ? 'selected-column' : '']" class="table-header" scope="col">City</th>
+                    <th v-if="deleteEnabled" class="table-header" scope="col" >Action</th>
                 </tr>
                 </thead>
             <tbody>
                 <tr v-for="person in persons.data" :key="person.id">
+                    <td>{{person.id}}</td>
                     <td>{{person.first_name}}</td>
                     <td>{{person.last_name}}</td>
                     <td>{{person.phone}}</td>
                     <td>{{person.email}}</td>
                     <td>{{person.city}}</td>
+                    <td v-if="deleteEnabled"><button type="button" v-on:click="destroyPerson(person.id)" class="btn btn-danger">Delete</button></td>
                 </tr>
             </tbody>
         </table>
@@ -56,6 +62,8 @@
         data(){
             return {
                 storeEnabled: false,
+                deleteEnabled: false,
+                actionMsg: '',
                 persons: '',
                 storeMsg: '',
                 filterSortBy:'first_name',
@@ -96,7 +104,8 @@
                 axios.post('/api/v1/person', data).then((res) => {
                     this.form.reset();
                     this.index();
-                    this.storeMsg = `The ${res.data.data.first_name} ${res.data.data.last_name} user saved.`
+                    this.actionMsg = `The ${res.data.data.first_name} ${res.data.data.last_name} user saved.`;
+                    this.storeEnabled = false;
                 }).catch(error => {
                     let errors = error.response.data.errors;
                     for (var field in errors) {
@@ -109,8 +118,16 @@
             updatePerson(){
 
             },
-            destroyPerson(){
+            destroyPerson(personId){
+                //save the new person
+                axios.delete(`/api/v1/person/${personId}`).then((res) => {
+                    this.actionMsg = `The ${res.data.data.first_name} ${res.data.data.last_name} user saved.`;
+                    this.index();
+                }).catch(error => {
+                    this.actionMsg = error.response.data.errors;
+                });
 
+                this.deleteEnabled = false;
             },
             abortStore(){
                 this.storeEnabled = false;

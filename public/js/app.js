@@ -1961,10 +1961,18 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       storeEnabled: false,
+      deleteEnabled: false,
+      actionMsg: '',
       persons: '',
       storeMsg: '',
       filterSortBy: 'first_name',
@@ -2009,7 +2017,8 @@ __webpack_require__.r(__webpack_exports__);
 
         _this2.index();
 
-        _this2.storeMsg = "The ".concat(res.data.data.first_name, " ").concat(res.data.data.last_name, " user saved.");
+        _this2.actionMsg = "The ".concat(res.data.data.first_name, " ").concat(res.data.data.last_name, " user saved.");
+        _this2.storeEnabled = false;
       })["catch"](function (error) {
         var errors = error.response.data.errors;
 
@@ -2021,7 +2030,19 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     updatePerson: function updatePerson() {},
-    destroyPerson: function destroyPerson() {},
+    destroyPerson: function destroyPerson(personId) {
+      var _this3 = this;
+
+      //save the new person
+      axios["delete"]("/api/v1/person/".concat(personId)).then(function (res) {
+        _this3.actionMsg = "The ".concat(res.data.data.first_name, " ").concat(res.data.data.last_name, " user saved.");
+
+        _this3.index();
+      })["catch"](function (error) {
+        _this3.actionMsg = error.response.data.errors;
+      });
+      this.deleteEnabled = false;
+    },
     abortStore: function abortStore() {
       this.storeEnabled = false;
       this.form.reset();
@@ -37631,6 +37652,16 @@ var render = function() {
   return _c("div", { staticClass: "w-50" }, [
     !_vm.storeEnabled
       ? _c("div", { staticClass: "clearfix" }, [
+          _c("span", {
+            staticClass: "float-left cursor-pointer",
+            domProps: { innerHTML: _vm._s(_vm.actionMsg) },
+            on: {
+              click: function($event) {
+                _vm.actionMsg = ""
+              }
+            }
+          }),
+          _vm._v(" "),
           _c(
             "button",
             {
@@ -37638,7 +37669,23 @@ var render = function() {
               attrs: { type: "button" },
               on: {
                 click: function($event) {
+                  _vm.deleteEnabled = !_vm.deleteEnabled
+                  _vm.storeEnabled = false
+                }
+              }
+            },
+            [_vm._v("Edit list")]
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-success float-right mr-2",
+              attrs: { type: "button" },
+              on: {
+                click: function($event) {
                   _vm.storeEnabled = true
+                  _vm.deleteEnabled = false
                 }
               }
             },
@@ -37661,8 +37708,13 @@ var render = function() {
           [
             _c("div", { staticClass: "clearfix mb-2" }, [
               _c("span", {
-                staticClass: "float-left",
-                domProps: { innerHTML: _vm._s(_vm.storeMsg) }
+                staticClass: "float-left cursor-pointer",
+                domProps: { innerHTML: _vm._s(_vm.storeMsg) },
+                on: {
+                  click: function($event) {
+                    _vm.storeMsg = ""
+                  }
+                }
               }),
               _vm._v(" "),
               _c(
@@ -37817,6 +37869,21 @@ var render = function() {
             "th",
             {
               staticClass: " table-header ",
+              class: [_vm.filterSortBy === "id" ? "selected-column" : ""],
+              attrs: { scope: "col" },
+              on: {
+                click: function($event) {
+                  return _vm.filterBy("id")
+                }
+              }
+            },
+            [_vm._v("#")]
+          ),
+          _vm._v(" "),
+          _c(
+            "th",
+            {
+              staticClass: " table-header ",
               class: [
                 _vm.filterSortBy === "first_name" ? "selected-column" : ""
               ],
@@ -37890,7 +37957,15 @@ var render = function() {
               }
             },
             [_vm._v("City")]
-          )
+          ),
+          _vm._v(" "),
+          _vm.deleteEnabled
+            ? _c(
+                "th",
+                { staticClass: "table-header", attrs: { scope: "col" } },
+                [_vm._v("Action")]
+              )
+            : _vm._e()
         ])
       ]),
       _vm._v(" "),
@@ -37898,6 +37973,8 @@ var render = function() {
         "tbody",
         _vm._l(_vm.persons.data, function(person) {
           return _c("tr", { key: person.id }, [
+            _c("td", [_vm._v(_vm._s(person.id))]),
+            _vm._v(" "),
             _c("td", [_vm._v(_vm._s(person.first_name))]),
             _vm._v(" "),
             _c("td", [_vm._v(_vm._s(person.last_name))]),
@@ -37906,7 +37983,25 @@ var render = function() {
             _vm._v(" "),
             _c("td", [_vm._v(_vm._s(person.email))]),
             _vm._v(" "),
-            _c("td", [_vm._v(_vm._s(person.city))])
+            _c("td", [_vm._v(_vm._s(person.city))]),
+            _vm._v(" "),
+            _vm.deleteEnabled
+              ? _c("td", [
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-danger",
+                      attrs: { type: "button" },
+                      on: {
+                        click: function($event) {
+                          return _vm.destroyPerson(person.id)
+                        }
+                      }
+                    },
+                    [_vm._v("Delete")]
+                  )
+                ])
+              : _vm._e()
           ])
         }),
         0
