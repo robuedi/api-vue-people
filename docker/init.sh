@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# composer install vendors
+composer dump-autoload
+composer install --no-scripts
+composer update
+
 # migrate
 php artisan migrate
 
