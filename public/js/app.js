@@ -37695,7 +37695,7 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "w-50" }, [
+  return _c("div", { staticClass: "w-70" }, [
     !_vm.storeEnabled
       ? _c("div", { staticClass: "clearfix" }, [
           _c("span", {
@@ -38059,7 +38059,11 @@ var render = function() {
         "tbody",
         _vm._l(_vm.persons.data, function(person) {
           return _c("tr", { key: person.id }, [
-            _c("td", [_vm._v(_vm._s(person.id))]),
+            _c("td", [
+              _c("p", { staticClass: "value-field no-margin" }, [
+                _vm._v(_vm._s(person.id))
+              ])
+            ]),
             _vm._v(" "),
             _c("td", [
               _c("input", {
@@ -38071,6 +38075,7 @@ var render = function() {
                     expression: "person.first_name"
                   }
                 ],
+                staticClass: "value-field",
                 attrs: { id: ["prs-inp-" + person.id + "-first_name"] },
                 domProps: { value: person.first_name },
                 on: {
@@ -38100,6 +38105,7 @@ var render = function() {
                     expression: "person.last_name"
                   }
                 ],
+                staticClass: "value-field",
                 attrs: { id: ["prs-inp-" + person.id + "-last_name"] },
                 domProps: { value: person.last_name },
                 on: {
@@ -38129,6 +38135,7 @@ var render = function() {
                     expression: "person.phone"
                   }
                 ],
+                staticClass: "value-field",
                 attrs: { id: ["prs-inp-" + person.id + "-phone"] },
                 domProps: { value: person.phone },
                 on: {
@@ -38158,6 +38165,7 @@ var render = function() {
                     expression: "person.email"
                   }
                 ],
+                staticClass: "value-field",
                 attrs: { id: ["prs-inp-" + person.id + "-email"] },
                 domProps: { value: person.email },
                 on: {
@@ -38187,6 +38195,7 @@ var render = function() {
                     expression: "person.city"
                   }
                 ],
+                staticClass: "value-field",
                 attrs: { id: ["prs-inp-" + person.id + "-city"] },
                 domProps: { value: person.city },
                 on: {

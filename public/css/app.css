@@ -10921,22 +10921,26 @@ table.editable-table tbody td {
   padding: 0;
 }
 
-table.editable-table tbody td input {
+table.editable-table tbody td .value-field {
   padding: 12px;
   border: none;
   background-color: transparent;
   outline: none;
 }
 
-table.editable-table tbody td input.active {
+table.editable-table tbody td .value-field.active {
   border: 1px solid #777;
 }
 
-table.editable-table tbody td input.pending {
+table.editable-table tbody td .value-field.pending {
   border: 1px solid #66f;
 }
 
-table.editable-table tbody td input.error {
+table.editable-table tbody td .value-field.error {
   border: 1px solid #d66;
+}
+
+.no-margin {
+  margin: 0;
 }
 

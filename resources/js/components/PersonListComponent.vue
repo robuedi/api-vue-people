@@ -1,5 +1,5 @@
 <template>
-    <div class="w-50">
+    <div class="w-70">
 
         <div class="clearfix" v-if="!storeEnabled">
             <span class="float-left cursor-pointer" v-html="actionMsg" @click="actionMsg = ''"></span>
@@ -49,12 +49,12 @@
                 </thead>
             <tbody >
                 <tr v-for="person in persons.data" :key="person.id">
-                    <td>{{person.id}}</td>
-                    <td><input :id="[`prs-inp-${person.id}-first_name`]" @focus="makeTdActive(person.id, 'first_name')" @blur="makeTdInactive(person.id, 'first_name')" v-model="person.first_name"> </td>
-                    <td><input :id="[`prs-inp-${person.id}-last_name`]" @focus="makeTdActive(person.id, 'last_name')" @blur="makeTdInactive(person.id, 'last_name')" v-model="person.last_name"> </td>
-                    <td><input :id="[`prs-inp-${person.id}-phone`]" @focus="makeTdActive(person.id, 'phone')" @blur="makeTdInactive(person.id, 'phone')" v-model="person.phone"> </td>
-                    <td><input :id="[`prs-inp-${person.id}-email`]" @focus="makeTdActive(person.id, 'email')" @blur="makeTdInactive(person.id, 'email')" v-model="person.email"> </td>
-                    <td><input :id="[`prs-inp-${person.id}-city`]" @focus="makeTdActive(person.id, 'city')" @blur="makeTdInactive(person.id, 'city')" v-model="person.city"> </td>
+                    <td><p class="value-field no-margin">{{person.id}}</p></td>
+                    <td><input class="value-field" :id="[`prs-inp-${person.id}-first_name`]" @focus="makeTdActive(person.id, 'first_name')" @blur="makeTdInactive(person.id, 'first_name')" v-model="person.first_name"> </td>
+                    <td><input class="value-field" :id="[`prs-inp-${person.id}-last_name`]" @focus="makeTdActive(person.id, 'last_name')" @blur="makeTdInactive(person.id, 'last_name')" v-model="person.last_name"> </td>
+                    <td><input class="value-field" :id="[`prs-inp-${person.id}-phone`]" @focus="makeTdActive(person.id, 'phone')" @blur="makeTdInactive(person.id, 'phone')" v-model="person.phone"> </td>
+                    <td><input class="value-field" :id="[`prs-inp-${person.id}-email`]" @focus="makeTdActive(person.id, 'email')" @blur="makeTdInactive(person.id, 'email')" v-model="person.email"> </td>
+                    <td><input class="value-field" :id="[`prs-inp-${person.id}-city`]" @focus="makeTdActive(person.id, 'city')" @blur="makeTdInactive(person.id, 'city')" v-model="person.city"> </td>
                     <td v-if="deleteEnabled"><button type="button" @click="destroyPerson(person.id)" class="btn btn-danger">Delete</button></td>
                 </tr>
             </tbody>
