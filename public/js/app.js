@@ -1967,6 +1967,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -1977,6 +1984,8 @@ __webpack_require__.r(__webpack_exports__);
       storeMsg: '',
       filterSortBy: 'first_name',
       filterDirection: false,
+      links: '',
+      indexLink: '/api/v1/person?sortby=first_name&direction=asc',
       form: new Form({
         firstName: '',
         lastName: '',
@@ -1993,9 +2002,11 @@ __webpack_require__.r(__webpack_exports__);
     index: function index() {
       var _this = this;
 
+      var indexLinkParam = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
       //get the persons
-      axios.get("/api/v1/person?sortby=".concat(this.filterSortBy, "&&direction=").concat(this.filterDirection ? 'desc' : 'asc')).then(function (res) {
+      axios.get(this.indexLink).then(function (res) {
         _this.persons = res.data;
+        _this.links = res.data.meta.links;
       })["catch"](function (error) {
         console.log(error);
       });
@@ -2050,8 +2061,13 @@ __webpack_require__.r(__webpack_exports__);
     },
     filterBy: function filterBy(filterColumn) {
       this.filterSortBy = filterColumn;
-      this.filterDirection = !this.filterDirection; //re-fetch the person
+      this.filterDirection = !this.filterDirection;
+      this.indexLink = "/api/v1/person?sortby=".concat(filterColumn, "&&direction=").concat(this.filterDirection ? 'desc' : 'asc'); //re-fetch the person
 
+      this.index();
+    },
+    paginateTo: function paginateTo(link) {
+      this.indexLink = link;
       this.index();
     }
   }
@@ -38003,6 +38019,40 @@ var render = function() {
                 ])
               : _vm._e()
           ])
+        }),
+        0
+      )
+    ]),
+    _vm._v(" "),
+    _c("nav", { attrs: { "aria-label": "Page navigation example" } }, [
+      _c(
+        "ul",
+        { staticClass: "pagination justify-content-center" },
+        _vm._l(_vm.links, function(link) {
+          return _c(
+            "li",
+            {
+              staticClass: "page-item",
+              class: [link.active ? "active" : "", link.url ? "" : "disabled"],
+              on: {
+                click: function($event) {
+                  return _vm.paginateTo(link.url)
+                }
+              }
+            },
+            [
+              _c("a", {
+                staticClass: "page-link",
+                attrs: { href: "#" },
+                domProps: { innerHTML: _vm._s(link.label) },
+                on: {
+                  click: function($event) {
+                    $event.preventDefault()
+                  }
+                }
+              })
+            ]
+          )
         }),
         0
       )

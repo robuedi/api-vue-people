@@ -54,6 +54,13 @@
                 </tr>
             </tbody>
         </table>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" v-on:click="paginateTo(link.url)"  v-bind:class="[link.active ? 'active' : '', link.url ? '' : 'disabled']" v-for="link in links">
+                    <a class="page-link" v-on:click.prevent href="#"  v-html="link.label"></a>
+                </li>
+            </ul>
+        </nav>
     </div>
 </template>
 
@@ -68,6 +75,8 @@
                 storeMsg: '',
                 filterSortBy:'first_name',
                 filterDirection:false,
+                links: '',
+                indexLink: '/api/v1/person?sortby=first_name&direction=asc',
                 form: new Form({
                     firstName: '',
                     lastName: '',
@@ -81,10 +90,12 @@
             this.index();
         },
         methods: {
-            index(){
+
+            index(indexLinkParam = ''){
                 //get the persons
-                axios.get(`/api/v1/person?sortby=${this.filterSortBy}&&direction=${this.filterDirection ? 'desc' : 'asc'}`).then((res) => {
+                axios.get(this.indexLink).then((res) => {
                     this.persons = res.data;
+                    this.links = res.data.meta.links;
                 }).catch((error) => {
                     console.log(error)
                 })
@@ -137,10 +148,17 @@
             filterBy(filterColumn){
                 this.filterSortBy = filterColumn;
                 this.filterDirection = !this.filterDirection;
+                this.indexLink = `/api/v1/person?sortby=${filterColumn}&&direction=${this.filterDirection ? 'desc' : 'asc'}`;
 
-                //re-fetch the person
+                    //re-fetch the person
+                this.index();
+            },
+            paginateTo(link){
+                this.indexLink = link;
+
                 this.index();
             }
+
         }
     }
 </script>
