@@ -14,9 +14,16 @@ class PersonsController extends Controller
     /**
      * @return PersonResourceCollection
      */
-    public function index() : PersonResourceCollection
+    public function index(Request $request) : PersonResourceCollection
     {
-        return new PersonResourceCollection(Person::paginate());
+        // Set query builder
+        $qb = Person::query();
+        if($request->has('sortby')){
+            //Handle default parameter of get with second argument
+            $qb->orderBy($request->get('sortby'), $request->get('direction', 'ASC'));
+        }
+
+        return new PersonResourceCollection($qb->paginate()->appends(request()->query()));
     }
 
     /**

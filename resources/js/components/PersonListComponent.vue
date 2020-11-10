@@ -1,17 +1,53 @@
 <template>
-    <div class="w-25">
-        <form @submit.prevent="storePerson">
-            <div class="input-group mb-3 w-100">
-                <input v-model="form.firstName" type="text" class="form-control form-control-lg" aria-label="Person first name" aria-describedby="save-person"/>
-                <input v-model="form.lastName" type="text" class="form-control form-control-lg" aria-label="Person last name" aria-describedby="save-person"/>
-                <input v-model="form.phone" type="text" class="form-control form-control-lg" aria-label="Person phone" aria-describedby="save-person"/>
-                <input v-model="form.email" type="text" class="form-control form-control-lg" aria-label="Person email" aria-describedby="save-person"/>
-                <input v-model="form.city" type="text" class="form-control form-control-lg" aria-label="Person city" aria-describedby="save-person"/>
-                <div class="input-group-append" >
-                    <button class="btn btn-success" type="submit" id="save-person"></button>
+    <div class="w-50">
+
+        <div class="clearfix" v-if="!storeEnabled">
+            <button type="button" class="btn btn-primary float-right" v-on:click="storeEnabled = true">+ Add new</button>
+        </div>
+        <form @submit.prevent="storePerson" v-if="storeEnabled">
+            <div class="clearfix mb-2">
+                <span class="float-left" v-html="storeMsg"></span>
+                <button type="button" class="ml-2 btn btn-secondary float-right" v-on:click="abortStore">Cancel</button>
+                <button type="submit" class="btn btn-success float-right">Save</button>
+            </div>
+            <div class="form-row">
+                <div class="col">
+                    <input v-model="form.firstName" type="text" class="form-control" placeholder="First name">
+                </div>
+                <div class="col">
+                    <input v-model="form.lastName" type="text" class="form-control" placeholder="Last name">
+                </div>
+                <div class="col">
+                    <input v-model="form.phone" type="text" class="form-control" placeholder="Phone">
+                </div>
+                <div class="col">
+                    <input v-model="form.email" type="text" class="form-control" placeholder="Email">
+                </div>
+                <div class="col">
+                    <input v-model="form.city" type="text" class="form-control" placeholder="City">
                 </div>
             </div>
         </form>
+        <table class="table table-striped mt-3">
+            <thead>
+                <tr>
+                    <th v-on:click="filterBy('first_name')" v-bind:class="[filterSortBy === 'first_name' ? 'selected-column' : '']" class=" table-header " scope="col">First name</th>
+                    <th v-on:click="filterBy('last_name')" v-bind:class="[filterSortBy === 'last_name' ? 'selected-column' : '']" class="table-header" scope="col">Last name</th>
+                    <th v-on:click="filterBy('phone')" v-bind:class="[filterSortBy === 'phone' ? 'selected-column' : '']" class="table-header" scope="col">Phone</th>
+                    <th v-on:click="filterBy('email')" v-bind:class="[filterSortBy === 'email' ? 'selected-column' : '']" class="table-header" scope="col">Email</th>
+                    <th v-on:click="filterBy('city')" v-bind:class="[filterSortBy === 'city' ? 'selected-column' : '']" class="table-header" scope="col">City</th>
+                </tr>
+                </thead>
+            <tbody>
+                <tr v-for="person in persons.data" :key="person.id">
+                    <td>{{person.first_name}}</td>
+                    <td>{{person.last_name}}</td>
+                    <td>{{person.phone}}</td>
+                    <td>{{person.email}}</td>
+                    <td>{{person.city}}</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </template>
 
@@ -19,7 +55,11 @@
     export default {
         data(){
             return {
+                storeEnabled: false,
                 persons: '',
+                storeMsg: '',
+                filterSortBy:'first_name',
+                filterDirection:false,
                 form: new Form({
                     firstName: '',
                     lastName: '',
@@ -29,18 +69,60 @@
                 })
             }
         },
+        mounted(){
+            this.index();
+        },
         methods: {
             index(){
-
+                //get the persons
+                axios.get(`/api/v1/person?sortby=${this.filterSortBy}&&direction=${this.filterDirection ? 'desc' : 'asc'}`).then((res) => {
+                    this.persons = res.data;
+                }).catch((error) => {
+                    console.log(error)
+                })
             },
             storePerson(){
+                this.storeMsg = '';
 
+                //get form data
+                let data = new FormData();
+                data.append('first_name', this.form.firstName);
+                data.append('last_name', this.form.lastName);
+                data.append('phone', this.form.phone);
+                data.append('email', this.form.email);
+                data.append('city', this.form.city);
+
+                //save the new person
+                axios.post('/api/v1/person', data).then((res) => {
+                    this.form.reset();
+                    this.index();
+                    this.storeMsg = `The ${res.data.data.first_name} ${res.data.data.last_name} user saved.`
+                }).catch(error => {
+                    let errors = error.response.data.errors;
+                    for (var field in errors) {
+                        if (errors.hasOwnProperty(field)) {
+                            this.storeMsg += `${errors[field]}<br/>`;
+                        }
+                    }
+                });
             },
             updatePerson(){
 
             },
             destroyPerson(){
 
+            },
+            abortStore(){
+                this.storeEnabled = false;
+                this.form.reset();
+                this.storeMsg = '';
+            },
+            filterBy(filterColumn){
+                this.filterSortBy = filterColumn;
+                this.filterDirection = !this.filterDirection;
+
+                //re-fetch the person
+                this.index();
             }
         }
     }
