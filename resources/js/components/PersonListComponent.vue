@@ -125,11 +125,6 @@
                 }).catch(error => {
                     let errors = error.response.data.errors;
                     this.form.errors.record(errors);
-                    // for (var field in errors) {
-                    //     if (errors.hasOwnProperty(field)) {
-                    //         this.storeMsg += `${errors[field]}<br/>`;
-                    //     }
-                    // }
                 });
             },
             updatePerson(){

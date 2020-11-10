@@ -2038,12 +2038,7 @@ __webpack_require__.r(__webpack_exports__);
       })["catch"](function (error) {
         var errors = error.response.data.errors;
 
-        _this2.form.errors.record(errors); // for (var field in errors) {
-        //     if (errors.hasOwnProperty(field)) {
-        //         this.storeMsg += `${errors[field]}<br/>`;
-        //     }
-        // }
-
+        _this2.form.errors.record(errors);
       });
     },
     updatePerson: function updatePerson() {},
