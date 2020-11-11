@@ -1,18 +1,18 @@
 #!/bin/bash
 
-# composer install vendors
-composer dump-autoload
-composer install --no-scripts
-composer update
+touch initial-script-output.txt
 
-# migrate
-php artisan migrate
+# vendors
+composer update >> initial-script-output.txt 2>&1
+composer dump-autoload >> initial-script-output.txt 2>&1
 
 # fresh migration
-php artisan migrate:fresh --seed
+php artisan migrate:fresh --seed >> initial-script-output.txt 2>&1
 
-npm install
+npm install >> initial-script-output.txt 2>&1
 
-npm run
+npm run >> initial-script-output.txt 2>&1
+
+rm initial-script-output.txt
 
 exit 0
