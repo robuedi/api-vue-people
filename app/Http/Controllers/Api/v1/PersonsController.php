@@ -11,13 +11,19 @@ use App\Models\Person;
 
 class PersonsController extends Controller
 {
+    private $person;
+
+    public function __construct(Person $person){
+        $this->person = $person;
+    }
+
     /**
      * @return PersonResourceCollection
      */
     public function index(Request $request) : PersonResourceCollection
     {
         // Set query builder
-        $qb = Person::query();
+        $qb = $this->person->query();
         if($request->has('sortby')){
             //Handle default parameter of get with second argument
             $qb->orderBy($request->get('sortby'), $request->get('direction', 'ASC'));
@@ -33,7 +39,7 @@ class PersonsController extends Controller
     public function show($person)
     {
         try{
-            $person = Person::findOrFail($person);
+            $person = $this->person->findOrFail($person);
         }
         catch(\Exception $e)
         {
@@ -57,9 +63,7 @@ class PersonsController extends Controller
             'city'          => 'required|max:255|min:1'
         ]);
 
-        $person = Person::create($request->all());
-
-        return new PersonResource($person);
+        return new PersonResource($this->person->create($request->all()));
     }
 
     /**
@@ -79,7 +83,7 @@ class PersonsController extends Controller
         ]);
 
         try{
-            $person = Person::findOrFail($person);
+            $person = $this->person->findOrFail($person);
         }
         catch(\Exception $e)
         {
@@ -98,7 +102,7 @@ class PersonsController extends Controller
     public function destroy($person)
     {
         try{
-            $person = Person::findOrFail($person);
+            $person = $this->person->findOrFail($person);
         }
         catch(\Exception $e)
         {

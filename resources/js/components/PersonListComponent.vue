@@ -122,10 +122,16 @@
                     this.index();
                     this.actionMsg = `The ${res.data.data.first_name} ${res.data.data.last_name} user saved.`;
                     this.storeEnabled = false;
+                    this.clearActionMsg();
                 }).catch(error => {
                     let errors = error.response.data.errors;
                     this.form.errors.record(errors);
                 });
+            },
+            clearActionMsg(){
+                setTimeout(() => {
+                    this.actionMsg = '';
+                }, 3500);
             },
             updatePerson(){
 
@@ -133,7 +139,8 @@
             destroyPerson(personId){
                 //save the new person
                 axios.delete(`/api/v1/person/${personId}`).then((res) => {
-                    this.actionMsg = `The ${res.data.data.first_name} ${res.data.data.last_name} user saved.`;
+                    this.actionMsg = `The ${res.data.data.first_name} ${res.data.data.last_name} user deleted.`;
+                    this.clearActionMsg();
                     this.index();
                 }).catch(error => {
                     this.actionMsg = error.response.data.errors;

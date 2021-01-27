@@ -9,6 +9,12 @@ use App\Http\Resources\v2\PersonResource;
 
 class PersonsController extends Controller
 {
+    private $person;
+
+    public function __construct(Person $person){
+        $this->person = $person;
+    }
+
     /**
      * @param $person
      * @return PersonResource|\Illuminate\Http\JsonResponse
@@ -16,7 +22,7 @@ class PersonsController extends Controller
     public function show($person)
     {
         try{
-            $person = Person::findOrFail($person);
+            $person = $this->person->findOrFail($person);
         }
         catch(\Exception $e)
         {
