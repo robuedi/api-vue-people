@@ -3,67 +3,50 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\v1\PersonStoreRequest;
+use App\Http\Requests\v1\PersonUpdateRequest;
 use App\Http\Resources\v1\PersonResource;
 use App\Http\Resources\v1\PersonResourceCollection;
-use Illuminate\Database\QueryException;
+use App\Http\Resources\v1\ResourceInterface;
 use Illuminate\Http\Request;
 use App\Models\Person;
+use App\Repositories\PersonRepository;
 
 class PersonsController extends Controller
 {
-    private $person;
+    private ResourceInterface $resource_response;
+    private PersonRepository $person_repository;
 
-    public function __construct(Person $person){
-        $this->person = $person;
+    public function __construct(ResourceInterface $resource_response, PersonRepository $person_repository)
+    {
+        $this->resource_response = $resource_response;
+        $this->person_repository = $person_repository;
     }
 
     /**
      * @return PersonResourceCollection
      */
-    public function index(Request $request) : PersonResourceCollection
+    public function index() : PersonResourceCollection
     {
-        // Set query builder
-        $qb = $this->person->query();
-        if($request->has('sortby')){
-            //Handle default parameter of get with second argument
-            $qb->orderBy($request->get('sortby'), $request->get('direction', 'ASC'));
-        }
-
-        return new PersonResourceCollection($qb->paginate()->appends(request()->query()));
+        return $this->resource_response->getResourceCollection($this->person_repository->getAllPaginate());
     }
 
     /**
      * @param $person
      * @return PersonResource|\Illuminate\Http\JsonResponse
      */
-    public function show($person)
+    public function show(Person $person)
     {
-        try{
-            $person = $this->person->findOrFail($person);
-        }
-        catch(\Exception $e)
-        {
-            return response()->json(['message'=> $e->getMessage()]);
-        }
-
-        return new PersonResource($person);
+        return $this->resource_response->getResource($person);
     }
 
     /**
      * @param Request $request
      * @return PersonResource
      */
-    public function store(Request $request)
+    public function store(PersonStoreRequest $request)
     {
-        $request->validate([
-            'first_name'    => 'required|max:255|min:1',
-            'last_name'     => 'required|max:255|min:1',
-            'phone'         => 'required|max:255|min:1',
-            'email'         => 'required|max:255|min:1',
-            'city'          => 'required|max:255|min:1'
-        ]);
-
-        return new PersonResource($this->person->create($request->all()));
+        return $this->resource_response->getResource($this->person_repository->create());
     }
 
     /**
@@ -71,47 +54,17 @@ class PersonsController extends Controller
      * @param Request $request
      * @return PersonResource|\Illuminate\Http\JsonResponse
      */
-    public function update($person, Request $request)
+    public function update(Person $person, PersonUpdateRequest $request)
     {
-
-        $request->validate([
-            'first_name'    => 'max:255|min:1',
-            'last_name'     => 'max:255|min:1',
-            'phone'         => 'max:255|min:1',
-            'email'         => 'max:255|min:1',
-            'city'          => 'max:255|min:1'
-        ]);
-
-        try{
-            $person = $this->person->findOrFail($person);
-        }
-        catch(\Exception $e)
-        {
-            return response()->json(['message'=> $e->getMessage()]);
-        }
-
-        $person->update($request->all());
-
-        return new PersonResource($person);
+        return $this->resource_response->getResource($this->person_repository->update($person));
     }
 
     /**
      * @param $person
      * @return PersonResource|\Illuminate\Http\JsonResponse
      */
-    public function destroy($person)
+    public function destroy(Person $person)
     {
-        try{
-            $person = $this->person->findOrFail($person);
-        }
-        catch(\Exception $e)
-        {
-            return response()->json(['message'=> $e->getMessage()]);
-        }
-
-        $person->delete();
-
-        return new PersonResource($person);
+        return $this->resource_response->getResource($this->person_repository->delete($person));
     }
-
 }
