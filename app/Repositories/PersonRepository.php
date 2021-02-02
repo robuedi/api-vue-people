@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Person;
+use Illuminate\Support\Facades\Log;
 
 class PersonRepository
 {

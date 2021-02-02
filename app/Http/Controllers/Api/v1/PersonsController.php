@@ -5,30 +5,27 @@ namespace App\Http\Controllers\Api\v1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\v1\PersonStoreRequest;
 use App\Http\Requests\v1\PersonUpdateRequest;
-use App\Http\Resources\v1\PersonResource;
-use App\Http\Resources\v1\PersonResourceCollection;
-use App\Http\Resources\v1\ResourceInterface;
+use App\Http\Resources\PersonResourceCollectionContract;
+use App\Http\Resources\PersonResourceContract;
 use Illuminate\Http\Request;
 use App\Models\Person;
 use App\Repositories\PersonRepository;
 
 class PersonsController extends Controller
 {
-    private ResourceInterface $resource_response;
     private PersonRepository $person_repository;
 
-    public function __construct(ResourceInterface $resource_response, PersonRepository $person_repository)
+    public function __construct(PersonRepository $person_repository)
     {
-        $this->resource_response = $resource_response;
         $this->person_repository = $person_repository;
     }
 
     /**
      * @return PersonResourceCollection
      */
-    public function index() : PersonResourceCollection
+    public function index()
     {
-        return $this->resource_response->getResourceCollection($this->person_repository->getAllPaginate());
+        return app()->makeWith(PersonResourceCollectionContract::class, [$this->person_repository->getAllPaginate()]);
     }
 
     /**
@@ -37,7 +34,7 @@ class PersonsController extends Controller
      */
     public function show(Person $person)
     {
-        return $this->resource_response->getResource($person);
+        return app()->make(PersonResourceContract::class, [$person]);
     }
 
     /**
@@ -46,7 +43,7 @@ class PersonsController extends Controller
      */
     public function store(PersonStoreRequest $request)
     {
-        return $this->resource_response->getResource($this->person_repository->create());
+        return app()->make(PersonResourceContract::class, [$this->person_repository->create()]);
     }
 
     /**
@@ -56,7 +53,7 @@ class PersonsController extends Controller
      */
     public function update(Person $person, PersonUpdateRequest $request)
     {
-        return $this->resource_response->getResource($this->person_repository->update($person));
+        return app()->make(PersonResourceContract::class, [$this->person_repository->update($person)]);
     }
 
     /**
@@ -65,6 +62,6 @@ class PersonsController extends Controller
      */
     public function destroy(Person $person)
     {
-        return $this->resource_response->getResource($this->person_repository->delete($person));
+        return app()->make(PersonResourceContract::class, [$this->person_repository->delete($person)]);
     }
 }
