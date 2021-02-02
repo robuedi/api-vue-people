@@ -24,11 +24,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(PersonResourceContract::class, function ($app, $data) {
             //check which API version we are
             switch (request()->route()->getPrefix()){
-                case 'v1':
-                    return new \App\Http\Resources\v1\PersonResource($data);
+                case 'api/v1/':
+                    return new \App\Http\Resources\v1\PersonResource(reset($data));
 
-                case 'v2':
-                    return new \App\Http\Resources\v2\PersonResource($data);
+                case 'api/v2/':
+                    return new \App\Http\Resources\v2\PersonResource(reset($data));
             }
         });
     }
