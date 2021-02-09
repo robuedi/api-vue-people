@@ -81,7 +81,7 @@
                 filterSortBy:'first_name',
                 filterDirection:false,
                 links: '',
-                indexLink: '/api/v1/person?sortby=first_name&direction=asc',
+                indexLink: '/api/v1/person?fields=id,first_name,last_name,email,phone,city&sort_by=first_name&order_by=asc',
                 form: new Form({
                     firstName: '',
                     lastName: '',
@@ -156,7 +156,7 @@
             filterBy(filterColumn){
                 this.filterSortBy = filterColumn;
                 this.filterDirection = !this.filterDirection;
-                this.indexLink = `/api/v1/person?sortby=${filterColumn}&&direction=${this.filterDirection ? 'desc' : 'asc'}`;
+                this.indexLink = `/api/v1/person?fields=id,first_name,last_name,email,phone,city&sort_by=${filterColumn}&&order_by=${this.filterDirection ? 'desc' : 'asc'}`;
 
                     //re-fetch the person
                 this.index();

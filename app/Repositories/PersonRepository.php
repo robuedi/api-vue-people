@@ -26,14 +26,20 @@ class PersonRepository
         return $person;
     }
 
-    public function getAllPaginate()
+    public function index()
     {
         $query = Person::query();
 
         //apply sort
-        if(request()->has('sortby'))
+        if(request()->has('sort_by'))
         {
-            $query->orderBy(request()->get('sortby'), request()->get('direction', 'ASC'));
+            $query->orderBy(request()->get('sort_by'), request()->get('order_by', 'ASC'));
+        }
+
+        //check for specific fields requested
+        if(request()->has('fields'))
+        {
+            $query->select(explode(',', request()->get('fields')));
         }
 
         return $query->paginate()->appends(request()->query());

@@ -25,7 +25,7 @@ class PersonsController extends Controller
      */
     public function index()
     {
-        return app()->makeWith(PersonResourceCollectionContract::class, [$this->person_repository->getAllPaginate()]);
+        return app()->makeWith(PersonResourceCollectionContract::class, [$this->person_repository->index()]);
     }
 
     /**
