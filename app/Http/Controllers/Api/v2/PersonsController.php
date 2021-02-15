@@ -13,6 +13,6 @@ class PersonsController extends Controller
      */
     public function show(Person $person)
     {
-        return app()->make(PersonResource::class, ['data' => $person]);
+        return app()->make('PersonResource', ['data' => $person]);
     }
 }

@@ -2,10 +2,9 @@
 
 namespace App\Http\Resources\v1;
 
-use App\Http\Resources\PersonResourceContract;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class PersonResource extends JsonResource implements PersonResourceContract
+class PersonResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

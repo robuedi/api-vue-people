@@ -2,9 +2,6 @@
 
 namespace App\Providers;
 
-use App\Http\Resources\PersonResourceCollectionContract;
-use App\Http\Resources\PersonResourceContract;
-use App\Http\Resources\v1\PersonResourceCollection;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -17,11 +14,11 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
 
-        $this->app->bind(PersonResourceCollectionContract::class, function ($app, $data) {
-            return new PersonResourceCollection(reset($data));
+        $this->app->bind('PersonResourceCollection', function ($app, $data) {
+            return \App\Http\Resources\v1\PersonResource::collection(reset($data));
         });
 
-        $this->app->bind(PersonResourceContract::class, function ($app, $data) {
+        $this->app->bind('PersonResource', function ($app, $data) {
             //check which API version we are
             switch (request()->route()->getPrefix()){
                 case 'api/v1/':
