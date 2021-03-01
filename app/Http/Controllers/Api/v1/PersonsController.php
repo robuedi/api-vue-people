@@ -9,6 +9,7 @@ use App\Http\Resources\v1\PersonResource;
 use Illuminate\Http\Request;
 use App\Models\Person;
 use App\Repositories\PersonRepository;
+use Illuminate\Http\Response;
 
 class PersonsController extends Controller
 {
@@ -20,11 +21,11 @@ class PersonsController extends Controller
     }
 
     /**
-     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     * @return \Illuminate\Http\JsonResponse|object
      */
     public function index()
     {
-        return PersonResource::collection($this->person_repository->index());
+        return PersonResource::collection($this->person_repository->index())->response()->setStatusCode(Response::HTTP_OK);
     }
 
     /**
@@ -33,16 +34,16 @@ class PersonsController extends Controller
      */
     public function show(Person $person)
     {
-        return PersonResource::make($person);
+        return PersonResource::make($person)->response()->setStatusCode(Response::HTTP_OK);
     }
 
     /**
      * @param Request $request
-     * @return PersonResource
+     * @return \Illuminate\Http\JsonResponse|object
      */
     public function store(PersonStoreRequest $request)
     {
-        return PersonResource::make($this->person_repository->create());
+        return PersonResource::make($this->person_repository->create())->response()->setStatusCode(Response::HTTP_CREATED);
     }
 
     /**
@@ -52,7 +53,7 @@ class PersonsController extends Controller
      */
     public function update(Person $person, PersonUpdateRequest $request)
     {
-        return PersonResource::make($this->person_repository->update($person));
+        return PersonResource::make($this->person_repository->update($person))->response()->setStatusCode(Response::HTTP_ACCEPTED);
     }
 
     /**
@@ -61,6 +62,6 @@ class PersonsController extends Controller
      */
     public function destroy(Person $person)
     {
-        return PersonResource::make($this->person_repository->delete($person));
+        return PersonResource::make($this->person_repository->delete($person))->response()->setStatusCode(Response::HTTP_OK);
     }
 }
