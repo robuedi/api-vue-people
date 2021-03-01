@@ -6,18 +6,18 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\v1\PersonStoreRequest;
 use App\Http\Requests\v1\PersonUpdateRequest;
 use App\Http\Resources\v1\PersonResource;
+use App\Repositories\PersonRepositoryInterface;
 use Illuminate\Http\Request;
 use App\Models\Person;
-use App\Repositories\PersonRepository;
 use Illuminate\Http\Response;
 
 class PersonsController extends Controller
 {
-    private PersonRepository $person_repository;
+    private PersonRepositoryInterface $person_repository;
 
-    public function __construct(PersonRepository $person_repository)
+    public function __construct(PersonRepositoryInterface $person_repository)
     {
-        $this->person_repository = $person_repository;
+        $this->person_repository = $person_repository->setVersion(1);
     }
 
     /**

@@ -5,8 +5,16 @@ namespace App\Repositories;
 use App\Models\Person;
 use Illuminate\Support\Facades\Log;
 
-class PersonRepository
+class PersonRepository implements PersonRepositoryInterface
 {
+    private float $version = 1;
+
+    public function setVersion(float $version)
+    {
+        $this->version = $version;
+        return $this;
+    }
+
     public function create()
     {
         return Person::create(request()->all());
