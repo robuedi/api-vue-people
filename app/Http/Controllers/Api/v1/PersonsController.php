@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\v1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\v1\PersonStoreRequest;
 use App\Http\Requests\v1\PersonUpdateRequest;
+use App\Http\Resources\v1\PersonResource;
 use Illuminate\Http\Request;
 use App\Models\Person;
 use App\Repositories\PersonRepository;
@@ -19,11 +20,11 @@ class PersonsController extends Controller
     }
 
     /**
-     * @return PersonResourceCollection
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
     public function index()
     {
-        return app()->makeWith('PersonResourceCollection', [$this->person_repository->index()]);
+        return PersonResource::collection($this->person_repository->index());
     }
 
     /**
@@ -32,7 +33,7 @@ class PersonsController extends Controller
      */
     public function show(Person $person)
     {
-        return app()->make('PersonResource', [$person]);
+        return PersonResource::make($person);
     }
 
     /**
@@ -41,7 +42,7 @@ class PersonsController extends Controller
      */
     public function store(PersonStoreRequest $request)
     {
-        return app()->make('PersonResource', [$this->person_repository->create()]);
+        return PersonResource::make($this->person_repository->create());
     }
 
     /**
@@ -51,7 +52,7 @@ class PersonsController extends Controller
      */
     public function update(Person $person, PersonUpdateRequest $request)
     {
-        return app()->make('PersonResource', [$this->person_repository->update($person)]);
+        return PersonResource::make($this->person_repository->update($person));
     }
 
     /**
@@ -60,6 +61,6 @@ class PersonsController extends Controller
      */
     public function destroy(Person $person)
     {
-        return app()->make('PersonResource', [$this->person_repository->delete($person)]);
+        return PersonResource::make($this->person_repository->delete($person));
     }
 }
